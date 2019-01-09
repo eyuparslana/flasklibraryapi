@@ -1,6 +1,6 @@
 from flask import Flask
 from routes import create_routes
-from extensions import db, ma
+from extensions import db, ma, migrate
 
 DB_SETTINGS = {
     'user': 'postgres',
@@ -32,6 +32,7 @@ def create_app():
 def register_extensions(app):
     db.init_app(app)
     ma.init_app(app)
+    migrate.init_app(app, db)
     return None
 
 
