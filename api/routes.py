@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort, make_response
-from models import BookInstance
-from schemas import BookInstanceSchema
+from models import BookInstance, Genre
+from schemas import BookInstanceSchema, GenreSchema
 from extensions import db
 
 BASE_URL = '/libraryapp/api'
@@ -106,3 +106,64 @@ def create_routes(app):
         except Exception:
             db.session.rollback()
             abort(404)
+
+    @app.route(make_path('/Genre'), methods=['GET'])
+    def get_genres():
+        try:
+            genres = Genre.query.filter_by().order_by(Genre.id)
+            output = [GenreSchema().dump(genre).data for genre in genres]
+            return jsonify({'genre': output})
+        except Exception as e:
+            print(e)
+            abort(404)
+
+    @app.route(make_path('/Genre/<int:id>'), methods=['GET'])
+    def get_genre(id):
+        try:
+            genres = Genre.query.get(id)
+            output = GenreSchema().dump(genres).data
+            return jsonify({'genre': output})
+        except Exception as e:
+            print(e)
+            abort(404)
+
+    @app.route(make_path('/Genre/<int:id>'), methods=['PATCH'])
+    def update_genre(id):
+        if not request.json:
+            abort(400)
+        try:
+            genres = Genre.query.get(id)
+            genres.name = request.json['name']
+            db.session.commit()
+            return 'OK', 200
+        except KeyError:
+            abort(400)
+        except Exception as e:
+            print(e)
+            abort(418)
+
+    @app.route(make_path('/Genre/<int:id>'), methods=['DELETE'])
+    def delete_genre(id):
+        try:
+            genre = Genre.query.get(id)
+            db.session.delete(genre)
+            db.session.commit()
+            return '{} is Deleted'.format(genre.name)
+        except KeyError:
+            abort(400)
+        except Exception as e:
+            print(e)
+            abort(418)
+
+    @app.route(make_path('/Genre'), methods=['POST'])
+    def add_genre():
+        if not request.json and 'genre' not in request.json:
+            abort(400)
+        genres = Genre.query.filter_by(name=request.json['genre']).first()
+        print(genres)
+        if genres and len(genres) > 0:
+            return "{} is already exist".format(request.json['genre'])
+        new_genre = Genre(name=request.json['genre'])
+        db.session.add(new_genre)
+        db.session.commit()
+        return "{} Created".format(str(new_genre.name)), 201
