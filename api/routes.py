@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort, make_response
-from models import BookInstance
-from schemas import BookInstanceSchema
+from models import BookInstance, Book
+from schemas import BookInstanceSchema, BookSchema
 from extensions import db
 
 BASE_URL = '/libraryapp/api'
