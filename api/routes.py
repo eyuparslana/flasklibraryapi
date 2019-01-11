@@ -108,17 +108,31 @@ def create_routes(app):
             abort(404)
 
     @app.route(make_path('/Genre'), methods=['GET'])
-    def get_genres():
+    def get_all_genre():
         try:
             genres = Genre.query.filter_by().order_by(Genre.id)
             output = [GenreSchema().dump(genre).data for genre in genres]
+            if not output:
+                return jsonify({'genre': "No Records"})
+            return jsonify({'genre': output})
+        except Exception as e:
+            print(e)
+            abort(404)
+
+    @app.route(make_path('/Genre/limit/<int:genre_limit>'), methods=['GET'])
+    def get_limited_genres(genre_limit):
+        try:
+            genres = Genre.query.filter_by().order_by(Genre.id).limit(genre_limit)
+            output = [GenreSchema().dump(genre).data for genre in genres]
+            if not output:
+                return jsonify({'genre': "No Records"})
             return jsonify({'genre': output})
         except Exception as e:
             print(e)
             abort(404)
 
     @app.route(make_path('/Genre/<int:id>'), methods=['GET'])
-    def get_genre(id):
+    def get_selected_genre(id):
         try:
             genre = Genre.query.get(id)
             output = GenreSchema().dump(genre).data
@@ -133,7 +147,7 @@ def create_routes(app):
             abort(400)
         try:
             genre = Genre.query.get(id)
-            genre.name = request.json['name']
+            genre.name = request.json['genre']
             db.session.commit()
             return 'OK', 200
         except KeyError:
@@ -160,7 +174,6 @@ def create_routes(app):
         if not request.json and 'genre' not in request.json:
             abort(400)
         genre = Genre.query.filter_by(name=request.json['genre']).first()
-        print(genre)
         if genre and len(genre) > 0:
             return "{} is already exist".format(request.json['genre'])
         new_genre = Genre(name=request.json['genre'])
