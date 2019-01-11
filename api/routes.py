@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort, make_response
-from models import BookInstance, Genre
-from schemas import BookInstanceSchema, GenreSchema
+from models import BookInstance, Book, Genre
+from schemas import BookInstanceSchema, BookSchema, GenreSchema
 from extensions import db
 
 BASE_URL = '/libraryapp/api'
@@ -107,6 +107,86 @@ def create_routes(app):
             db.session.rollback()
             abort(404)
 
+    @app.route(make_path('/Books'), methods=['POST'])
+    def create_book():
+        if not request.json:
+            abort(400)
+        try:
+
+            new_book = Book(
+                title=request.json['title'],
+                #author_id=request.json['author_id'],
+                isbn=request.json['isbn'],
+                #genre=request.json['genre'],
+                publish_date=request.json['publish_date']
+            )
+            db.session.add(new_book)
+            db.session.commit()
+
+            return '{} created'.format(str(new_book.title)), 201
+        except KeyError:
+            abort(400)
+        except Exception as e:
+            print(e)
+            abort(404)
+
+    @app.route(make_path('/Books'), methods=['GET'])
+    def get_all_books():
+        try:
+            books = Book.query.all()
+            output = [BookSchema().dump(book).data for book in books]
+            return jsonify({'book': output}), 200
+        except Exception:
+            abort(404)
+
+    @app.route(make_path('/Books/<int:book_id>'), methods=['GET'])
+    def get_book(book_id):
+        try:
+            book = Book.query.get(book_id)
+            output = BookSchema().dump(book).data
+            return jsonify({'book': output}), 200
+        except Exception:
+            abort(404)
+
+    @app.route(make_path('/Books/<int:book_id>'), methods=['PATCH'])
+    def update_book(book_id):
+        if not request.json:
+            abort(404)
+        try:
+            title = request.json['title'],
+            author_id = request.json['author_id'],
+            isbn = request.json['isbn'],
+            genre = request.json['genre'],
+            publish_date = request.json['publish_date']
+
+            book = Book.query.get(book_id)
+
+            book.title = title
+            #book.author_id = author_id
+            book.isbn = isbn
+            #book.genre = genre
+            book.publish_date = publish_date
+
+            db.session.commit()
+            return jsonify({'result': 'success'}), 200
+        except KeyError:
+            abort(400)
+        except Exception:
+            db.session.rollback()
+            abort(404)
+
+    @app.route(make_path('/Books/<int:book_id>'), methods=['DELETE'])
+    def delete_book(book_id):
+        try:
+            book = Book.query.get(book_id)
+            db.session.delete(book)
+            db.session.commit()
+
+            return jsonify({'result': 'success'}), 200
+        except Exception:
+            db.session.rollback()
+            abort(404)
+
     @app.route(make_path('/Genre'), methods=['GET'])
     def get_all_genre():
         try:
@@ -117,7 +197,7 @@ def create_routes(app):
             return jsonify({'genre': output})
         except Exception as e:
             print(e)
-            abort(404)
+            abort(400)
 
     @app.route(make_path('/Genre/limit/<int:genre_limit>'), methods=['GET'])
     def get_limited_genres(genre_limit):
