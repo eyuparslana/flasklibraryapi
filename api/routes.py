@@ -133,7 +133,7 @@ def create_routes(app):
     @app.route(make_path('/Books'), methods=['GET'])
     def get_all_books():
         try:
-            books = Book.query.all()
+            books = Book.query.filter_by().order_by(Book.id)
             output = [BookSchema().dump(book).data for book in books]
             return jsonify({'book': output}), 200
         except Exception:
@@ -148,18 +148,17 @@ def create_routes(app):
         except Exception:
             abort(404)
 
-    @app.route(make_path('/Books/<int:book_id>'), methods=['PATCH'])
+    @app.route(make_path('/Book/<int:book_id>'), methods=['PATCH'])
     def update_book(book_id):
         if not request.json:
             abort(404)
         try:
-            title = request.json['title'],
-            author_id = request.json['author_id'],
-            isbn = request.json['isbn'],
-            genre = request.json['genre'],
-            publish_date = request.json['publish_date']
-
             book = Book.query.get(book_id)
+            title = request.json.get('title', book.title),
+            #author_id = request.json.get('author_id', book.author_id),
+            isbn = request.json.get('isbn', book.isbn),
+            #genre = request.json.get('genre', book.genre),
+            publish_date = request.json.get('publish_date', book.publish_date)
 
             book.title = title
             #book.author_id = author_id
@@ -171,7 +170,8 @@ def create_routes(app):
             return jsonify({'result': 'success'}), 200
         except KeyError:
             abort(400)
-        except Exception:
+        except Exception as e:
+            print(e)
             db.session.rollback()
             abort(404)
 
