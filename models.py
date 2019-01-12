@@ -9,8 +9,11 @@ db = SQLAlchemy()
 
 class Genre(db.Model):
     __tablename__ = 'genres'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
 
-    pass
+    def __str__(self):
+        return f'Genre={self.name}'
 
 
 class Author(db.Model):
@@ -47,7 +50,8 @@ class BookInstance(db.Model):
 
 
 class GenreSchema(ma.Schema):
-    pass
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True, validate=validate.Length(1))
 
 
 class AuthorSchema(ma.Schema):
