@@ -50,7 +50,8 @@ class BookInstance(db.Model):
 
 
 class GenreSchema(ma.Schema):
-    pass
+    id = fields.Integer(dump_only=True)
+    name = fields.String(required=True, validate=validate.Length(1))
 
 
 class AuthorSchema(ma.Schema):
