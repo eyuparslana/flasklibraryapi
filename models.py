@@ -24,7 +24,7 @@ class Author(db.Model):
 
     def __str__(self):
         return f'Author={self.first_name} {self.last_name}'
-        
+
 
 class BookGenre(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,7 +59,9 @@ class GenreSchema(ma.Schema):
 
 
 class AuthorSchema(ma.Schema):
-    pass
+    id = fields.Integer(dump_only=True)
+    first_name = fields.String(required=True, validate=validate.Length(1))
+    last_name = fields.String(required=True, validate=validate.Length(1))
 
 
 class BookSchema(ma.Schema):
