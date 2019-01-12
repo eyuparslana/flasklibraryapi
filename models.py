@@ -34,8 +34,22 @@ class BookGenre(db.Model):
 
 class Book(db.Model):
     __tablename__ = 'books'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50), nullable=False)
+    isbn = db.Column(db.String(13), unique=True, nullable=False)
+    publish_date = db.Column(db.Date, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey(
+        'authors.id', ondelete='CASCADE'), nullable=False)
+    author = db.relationship(
+        'Author',
+        backref=db.backref('books', lazy='dynamic'))
+    genres = db.relationship(
+        'Genre',
+        secondary='book_genre',
+        backref=db.backref('books', lazy='dynamic'))
 
-    pass
+    def __str__(self):
+        return f'Book={self.title}'
 
 
 class BookInstance(db.Model):
@@ -65,7 +79,12 @@ class AuthorSchema(ma.Schema):
 
 
 class BookSchema(ma.Schema):
-    pass
+    id = fields.Integer(dump_only=True)
+    title = fields.String(required=True, validate=validate.Length(1))
+    isbn = fields.String(required=True, validate=validate.Length(1))
+    publish_date = fields.Date(required=True)
+    author_id = fields.Integer(required=True)
+    genres = fields.Nested(GenreSchema, only=['id'])
 
 
 class BookInstanceSchema(ma.Schema):
