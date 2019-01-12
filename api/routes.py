@@ -1,6 +1,6 @@
 from flask import jsonify, request, abort, make_response
-from models import BookInstance, Book, Genre
-from schemas import BookInstanceSchema, BookSchema, GenreSchema
+from models import BookInstance, Book, Genre, Author
+from schemas import BookInstanceSchema, BookSchema, GenreSchema, AuthorSchema
 from extensions import db
 
 BASE_URL = '/libraryapp/api'
@@ -260,3 +260,68 @@ def create_routes(app):
         db.session.add(new_genre)
         db.session.commit()
         return "{} Created".format(str(new_genre.name)), 201
+
+    @app.route(make_path('/Author'), methods=['POST'])
+    def add_author():
+        if not request.json or 'name' not in request.json.keys() \
+                            or 'lastname' not in request.json.keys():
+            abort(400)
+
+        new_author = Author(
+            name=request.json['name'],
+            lastname=request.json['lastname'],
+            date_of_birth=request.json.get('date_of_birth',None),
+            date_of_death=request.json.get('date_of_death',None),
+        )
+        db.session.add(new_author)
+        db.session.commit()
+        return "Created. ID: {}".format(new_author.id), 201
+
+    @app.route(make_path('/Author/<int:id>'), methods=['DELETE'])
+    def delete_author(id):
+        author = Author.query.get(id)
+        if author == None:
+            abort(404)
+        db.session.delete(author)
+        db.session.commit()
+        return '{} is deleted'.format(author.name)
+
+    @app.route(make_path('/Author/<int:id>'), methods=['PATCH'])
+    def update_author(id):
+        if not request.json:
+            abort(400)
+        author = Author.query.get(int(id))
+        if author == None:
+            abor(404)
+
+        author.name = request.json.get('name', author.name)
+        author.lastname = request.json.get('lastname', author.lastname)
+        author.date_of_birth = request.json.get('date_of_birth',
+                                    author.date_of_birth)
+        author.date_of_death = request.json.get('date_of_death',
+                                    author.date_of_death)
+
+        db.session.commit()
+
+        return "Updated", 200
+
+    @app.route(make_path('/Author'), methods=['GET'])
+    def get_all_authors():
+        authors = Author.query.all()
+        output = [AuthorSchema().dump(
+            instance).data for instance in authors]
+
+        if not output:
+            return jsonify({'author': "No Records"})
+
+        return jsonify({'author': output})
+
+    @app.route(make_path('/Author/<int:id>'), methods=['GET'])
+    def get_author(id):
+        author = Author.query.get(id)
+        if author == None:
+            abort(404)
+
+        result = AuthorSchema().dump(author).data
+
+        return jsonify({'author': result}), 200

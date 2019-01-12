@@ -59,3 +59,10 @@ class Genre(db.Model):
 
     def __str__(self):
         return '{}'.format(self.name)
+
+class Author(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20))
+    lastname = db.Column(db.String(20))
+    date_of_birth = db.Column(db.Date, nullable=True)
+    date_of_death = db.Column(db.Date, nullable=True)
