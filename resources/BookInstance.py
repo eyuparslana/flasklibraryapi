@@ -3,7 +3,7 @@ from flask_restful import Resource
 from models import db, Book, BookInstance, BookInstanceSchema
 
 
-book_instance_schemas = BookInstanceSchema(many=True)
+book_instances_schema = BookInstanceSchema(many=True)
 book_instance_schema = BookInstanceSchema()
 
 
@@ -59,7 +59,7 @@ class BookInstanceListResource(Resource):
         '''GET method to list all book instances'''
 
         book_instances = BookInstance.query.all()
-        book_instances = book_instance_schemas.load(book_instances).data
+        book_instances = book_instances_schema.load(book_instances).data
         return {'status': 'success', 'data': book_instances}, 200
 
     def post(self):
