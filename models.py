@@ -15,9 +15,13 @@ class Genre(db.Model):
 
 class Author(db.Model):
     __tablename__ = 'authors'
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
 
-    pass
-
+    def __str__(self):
+        return f'Author={self.first_name} {self.last_name}'
+        
 
 class BookGenre(db.Model):
     id = db.Column(db.Integer, primary_key=True)

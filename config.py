@@ -1,7 +1,7 @@
 username = "postgres"
-password = ""
-host = "localhost"
-database = "librarydb"
+password = "0990"
+host = "localhost:5432"
+database = "fikirest"
 
 SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = True
