@@ -1,7 +1,7 @@
 username = "postgres"
 password = ""
 host = "localhost"
-database = ""
+database = "librarydb"
 
 SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = True
