@@ -10,27 +10,75 @@ class AuthorResource(Resource):
     def get(self, author_id):
         '''GET method to list an author'''
 
-        pass
+        author = Author.query.get(author_id)
+        author = author_schema.dump(author).data
+        return {'status': 'success', 'data': author}, 200
 
     def put(self, author_id):
         '''PUT method to update an author'''
 
-        pass
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No input data provided'}, 400
+
+        data, errors = author_schema.load(json_data)
+        if errors:
+            return errors, 422
+
+        author = Author.query.filter_by(id=author_id).first()
+        if not author:
+            return {'message': 'Genre does not exist'}, 400
+
+        author.first_name = data['first_name']
+        author.last_name = data['last_name']
+
+        db.session.commit()
+
+        result = author_schema.dump(author).data
+        return {'status': 'success', 'data': result}, 200
 
     def delete(self, author_id):
         '''DELETE method to delete an author'''
 
-        pass
+        author = Author.query.filter_by(id=author_id).delete()
+        db.session.commit()
+
+        result = author_schema.dump(author).data
+        return {"status": 'success', 'data': result}, 200
 
 
 class AuthorListResource(Resource):
-
     def get(self):
         '''GET method to list all authors'''
 
-        pass
+        authors = Author.query.all()
+        authors = authors_schema.dump(authors).data
+        return {'status': 'success', 'data': authors}, 200
 
     def post(self):
         '''POST method to create an author'''
 
-        pass
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No input provided'}, 400
+
+        data, errors = author_schema.load(json_data)
+        if errors:
+            return errors, 422
+
+        author = Author.query.filter_by(
+            first_name=data['first_name'], last_name=data['last_name']).first()
+
+        if author:
+            return {'message': 'Author already exists'}, 400
+
+        author = Author(
+            first_name=data['first_name'],
+            last_name=data['last_name']
+        )
+
+        db.session.add(author)
+        db.session.commit()
+
+        result = author_schema.dump(author).data
+        return {'status': 'success', 'data': result}, 201
