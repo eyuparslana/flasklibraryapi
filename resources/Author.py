@@ -14,6 +14,7 @@ class AuthorResource(Resource):
         author = author_schema.dump(author).data
         return {'status': 'success', 'data': author}, 200
 
+
     def put(self, author_id):
         """PUT method to update an author"""
 
@@ -82,3 +83,25 @@ class AuthorListResource(Resource):
 
         result = author_schema.dump(author).data
         return {'status': 'success', 'data': result}, 201
+
+
+class AuthorSearch(Resource):
+    def get(self):
+        return {'message': 'Must be POST'}, 400
+
+    def post(self):
+        """POST method to create an author"""
+        json_data = request.get_json(force=True)
+
+        if not json_data:
+            return {'message': 'No input provided'}, 400
+
+        data, errors = author_schema.load(json_data)
+        raw_result = Author.query.filter_by(**data)
+
+        result = authors_schema.dump(raw_result).data
+
+        if len(result) == 0:
+            return {'message': 'No author provided'}, 200
+            
+        return result
