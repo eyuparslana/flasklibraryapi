@@ -12,7 +12,7 @@ class BookInstanceResource(Resource):
         '''GET method to list a book instance'''
 
         book_instance = BookInstance.query.get(book_instance_id)
-        book_instance = book_instance_schema.load(book_instance).data
+        book_instance = book_instance_schema.dump(book_instance).data
         return {'status': 'success', 'data': book_instance}, 200
 
     def put(self, book_instance_id):
@@ -33,13 +33,13 @@ class BookInstanceResource(Resource):
             return {'message': 'Book instance does not exist'}, 400
 
         # Update book instance
-        book_instance.status = data['status'],
-        book_instance.due_back = data.get('due_back', None),
+        book_instance.status = data.status,
+        book_instance.due_back = data.due_back,
 
         db.session.commit()
 
         result = book_instance_schema.dump(book_instance).data
-        return {"status": 'success', 'data': result}, 204
+        return {"status": 'success', 'data': result}, 200
 
     def delete(self, book_instance_id):
         '''DELETE method to delete a book instance'''
@@ -50,7 +50,7 @@ class BookInstanceResource(Resource):
         db.session.commit()
 
         result = book_instance_schema.dump(book_instance).data
-        return {"status": 'success', 'data': result}, 204
+        return {"status": 'success', 'data': result}, 200
 
 
 class BookInstanceListResource(Resource):
@@ -59,7 +59,7 @@ class BookInstanceListResource(Resource):
         '''GET method to list all book instances'''
 
         book_instances = BookInstance.query.all()
-        book_instances = book_instances_schema.load(book_instances).data
+        book_instances = book_instances_schema.dump(book_instances).data
         return {'status': 'success', 'data': book_instances}, 200
 
     def post(self):
@@ -74,15 +74,11 @@ class BookInstanceListResource(Resource):
             return errors, 422
 
         # Book control
-        book = Book.query.filter_by(id=data['book_id']).first()
+        book = Book.query.filter_by(id=data.book_id).first()
         if not book:
             return {'status': 'error', 'message': 'book not found'}, 400
 
-        book_instance = BookInstance(
-            status=data['status'],
-            due_back=data.get('due_back', None),
-            book_id=data['book_id']
-        )
+        book_instance = data
 
         db.session.add(book_instance)
         db.session.commit()

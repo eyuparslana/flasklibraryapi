@@ -67,6 +67,11 @@ class BookInstance(db.Model):
         return f'Book={self.book.__str__} Status={self.status}'
 
 
+class BaseSchema(ma.ModelSchema):
+    class Meta:
+        sqla_session = db.session
+
+
 class GenreSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     name = fields.String(required=True, validate=validate.Length(1))
@@ -87,8 +92,8 @@ class BookSchema(ma.Schema):
     genres = fields.Nested(GenreSchema, only=['id'])
 
 
-class BookInstanceSchema(ma.Schema):
-    id = fields.Integer(dump_only=True)
-    status = fields.String(required=True, validate=validate.Length(1))
-    due_back = fields.Date()
+class BookInstanceSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        model = BookInstance
     book_id = fields.Integer(required=True)
+
