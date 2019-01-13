@@ -58,7 +58,7 @@ class BookInstanceListResource(Resource):
     def get(self):
         """GET method to list all book instances"""
 
-        book_instances = BookInstance.query.all()
+        book_instances = BookInstance.query.filter_by().order_by(BookInstance.id)
         book_instances = book_instances_schema.dump(book_instances).data
         return {'status': 'success', 'data': book_instances}, 200
 
