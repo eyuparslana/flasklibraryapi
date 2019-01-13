@@ -41,7 +41,10 @@ class AuthorResource(Resource):
     def delete(self, author_id):
         """DELETE method to delete an author"""
 
-        author = Author.query.filter_by(id=author_id).delete()
+        author = Author.query.get(author_id)
+        if not author:
+            return {'message': 'No Author Data'}, 400
+        db.session.delete(author)
         db.session.commit()
 
         result = author_schema.dump(author).data

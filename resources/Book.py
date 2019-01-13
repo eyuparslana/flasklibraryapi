@@ -64,8 +64,10 @@ class BookResource(Resource):
         DELETE method to delete a book
         """
 
-        book = Book.query.filter_by(id=book_id).delete()
-
+        book = Book.query.get(book_id)
+        if not book:
+            return {'message': 'No Book Data'}, 400
+        db.session.delete(book)
         db.session.commit()
 
         result = book_schema.dump(book).data

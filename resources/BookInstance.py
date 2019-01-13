@@ -44,9 +44,11 @@ class BookInstanceResource(Resource):
     def delete(self, book_instance_id):
         """DELETE method to delete a book instance"""
 
-        book_instance = BookInstance.query.filter_by(
-            id=book_instance_id).delete()
+        book_instance = BookInstance.query.get(book_instance_id)
+        if not book_instance:
+            return {'message': 'No BookInstance Data'}, 400
 
+        db.session.delete(book_instance)
         db.session.commit()
 
         result = book_instance_schema.dump(book_instance).data

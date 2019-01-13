@@ -38,7 +38,10 @@ class GenreResource(Resource):
     def delete(self, genre_id):
         """DELETE method to delete a genre"""
 
-        genre = Genre.query.filter_by(id=genre_id).delete()
+        genre = Genre.query.get(genre_id)
+        if not genre:
+            return {'message': 'No Genre Data'}, 400
+        db.session.delete(genre)
         db.session.commit()
 
         result = genre_schema.dump(genre).data
