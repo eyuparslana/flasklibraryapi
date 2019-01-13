@@ -9,14 +9,14 @@ book_instance_schema = BookInstanceSchema()
 
 class BookInstanceResource(Resource):
     def get(self, book_instance_id):
-        '''GET method to list a book instance'''
+        """GET method to list a book instance"""
 
         book_instance = BookInstance.query.get(book_instance_id)
         book_instance = book_instance_schema.dump(book_instance).data
         return {'status': 'success', 'data': book_instance}, 200
 
     def put(self, book_instance_id):
-        '''PUT method to update a book instance'''
+        """PUT method to update a book instance"""
 
         json_data = request.get_json(force=True)
         if not json_data:
@@ -42,7 +42,7 @@ class BookInstanceResource(Resource):
         return {"status": 'success', 'data': result}, 200
 
     def delete(self, book_instance_id):
-        '''DELETE method to delete a book instance'''
+        """DELETE method to delete a book instance"""
 
         book_instance = BookInstance.query.filter_by(
             id=book_instance_id).delete()
@@ -56,14 +56,14 @@ class BookInstanceResource(Resource):
 class BookInstanceListResource(Resource):
 
     def get(self):
-        '''GET method to list all book instances'''
+        """GET method to list all book instances"""
 
         book_instances = BookInstance.query.all()
         book_instances = book_instances_schema.dump(book_instances).data
         return {'status': 'success', 'data': book_instances}, 200
 
     def post(self):
-        '''POST method to create a book instance'''
+        """POST method to create a book instance"""
 
         json_data = request.get_json(force=True)
         if not json_data:

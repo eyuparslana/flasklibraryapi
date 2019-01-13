@@ -93,32 +93,22 @@ class BookListResource(Resource):
         data, errors = book_schema.load(json_data)
         if errors:
             return errors, 422
-
-        book = Book.query.filter_by(title=data['title']).first()
+        title = data.title
+        db.session.rollback()
+        book = Book.query.filter_by(title=title).first()
         if book:
             return {'message': 'Book already exists'}, 400
 
         # Author control
-        author = Author.query.filter_by(id=data['author_id']).first()
+        author = Author.query.filter_by(id=data.author_id).first()
         if not author:
             return {'status': 'error', 'message': 'book author not found'}, 400
 
         # Genres control
-        genres = data['genres']
-        genre_objects = []
-        for genre in genres:
-            genre_object = Genre.query.filter_by(id=genre).first()
-            if not genre_object:
+        for genre in data.genres:
+            if not genre.name:
                 return {'status': 'error', 'message': 'genre not found'}, 400
-            genre_objects.append(genre_object)
-
-        book = Book(
-            title=data['title'],
-            isbn=data['isbn'],
-            publish_date=data['publish_date'],
-            author_id=data['author_id'],
-            genres=genre_objects
-        )
+        book = data
 
         db.session.add(book)
         db.session.commit()

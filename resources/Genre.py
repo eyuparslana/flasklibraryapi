@@ -29,7 +29,7 @@ class GenreResource(Resource):
         if not genre:
             return {'message': 'Genre does not exist'}, 400
 
-        genre.name = data['name']
+        genre.name = data.name
         db.session.commit()
 
         result = genre_schema.dump(genre).data
@@ -49,7 +49,7 @@ class GenreListResource(Resource):
     def get(self):
         """GET method to list all genres"""
 
-        genres = Genre.query.all()
+        genres = Genre.query.filter_by().order_by(Genre.id)
         genres = genres_schema.dump(genres).data
         return {'status': 'success', 'data': genres}, 200
 
@@ -64,11 +64,11 @@ class GenreListResource(Resource):
         if errors:
             return errors, 422
 
-        genre = Genre.query.filter_by(name=data['name']).first()
+        genre = Genre.query.filter_by(name=data.name).first()
         if genre:
             return {'message': 'Genre already exists'}, 400
 
-        genre = Genre(name=json_data['name'])
+        genre = Genre(name=json_data.name)
 
         db.session.add(genre)
         db.session.commit()
