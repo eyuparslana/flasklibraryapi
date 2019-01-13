@@ -29,8 +29,8 @@ class AuthorResource(Resource):
         if not author:
             return {'message': 'Genre does not exist'}, 400
 
-        author.first_name = data['first_name']
-        author.last_name = data['last_name']
+        author.first_name = data.first_name
+        author.last_name = data.last_name
 
         db.session.commit()
 
@@ -67,14 +67,14 @@ class AuthorListResource(Resource):
             return errors, 422
 
         author = Author.query.filter_by(
-            first_name=data['first_name'], last_name=data['last_name']).first()
+            first_name=data.first_name, last_name=data.last_name).first()
 
         if author:
             return {'message': 'Author already exists'}, 400
 
         author = Author(
-            first_name=data['first_name'],
-            last_name=data['last_name']
+            first_name=data.first_name,
+            last_name=data.last_name
         )
 
         db.session.add(author)

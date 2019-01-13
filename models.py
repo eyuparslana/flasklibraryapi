@@ -72,24 +72,20 @@ class BaseSchema(ma.ModelSchema):
         sqla_session = db.session
 
 
-class GenreSchema(ma.Schema):
-    id = fields.Integer(dump_only=True)
-    name = fields.String(required=True, validate=validate.Length(1))
+class GenreSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        model = Genre
 
 
-class AuthorSchema(ma.Schema):
-    id = fields.Integer(dump_only=True)
-    first_name = fields.String(required=True, validate=validate.Length(1))
-    last_name = fields.String(required=True, validate=validate.Length(1))
+class AuthorSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        model = Author
 
 
-class BookSchema(ma.Schema):
-    id = fields.Integer(dump_only=True)
-    title = fields.String(required=True, validate=validate.Length(1))
-    isbn = fields.String(required=True, validate=validate.Length(1))
-    publish_date = fields.Date(required=True)
+class BookSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        model = Book
     author_id = fields.Integer(required=True)
-    genres = fields.Nested(GenreSchema, only=['id'])
 
 
 class BookInstanceSchema(BaseSchema):
