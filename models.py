@@ -1,7 +1,7 @@
 from marshmallow import fields, validate
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import datetime
 
 ma = Marshmallow()
 db = SQLAlchemy()
@@ -28,8 +28,8 @@ class Author(db.Model):
 
 class BookGenre(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('books.id'))
-    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id'))
+    book_id = db.Column(db.Integer, db.ForeignKey('books.id', ondelete='CASCADE'))
+    genre_id = db.Column(db.Integer, db.ForeignKey('genres.id', ondelete='CASCADE'))
 
 
 class Book(db.Model):
@@ -67,6 +67,16 @@ class BookInstance(db.Model):
         return f'Book={self.book.__str__} Status={self.status}'
 
 
+class Loan(db.Model):
+    __tablename__ = 'loans'
+    id = db.Column(db.Integer, primary_key=True)
+    loaned_by = db.Column(db.String(50), nullable=False)
+    loaned_at = db.Column(db.Date(), default=datetime.now)
+    book_instance_id = db.Column(db.Integer, db.ForeignKey(
+        'book_instances.id'), nullable=False)
+    book_instance = db.relationship('BookInstance')
+
+
 class BaseSchema(ma.ModelSchema):
     class Meta:
         sqla_session = db.session
@@ -93,3 +103,8 @@ class BookInstanceSchema(BaseSchema):
         model = BookInstance
     book_id = fields.Integer(required=True)
 
+
+class LoanSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        model = Loan
+    book_instance_id = fields.Integer(required=True)

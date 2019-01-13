@@ -51,7 +51,7 @@ class AuthorListResource(Resource):
     def get(self):
         """GET method to list all authors"""
 
-        authors = Author.query.all()
+        authors = Author.query.filter_by().order_by(Author.id)
         authors = authors_schema.dump(authors).data
         return {'status': 'success', 'data': authors}, 200
 
