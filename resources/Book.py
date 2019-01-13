@@ -94,8 +94,12 @@ class BookListResource(Resource):
         data, errors = book_schema.load(json_data)
         if errors:
             return errors, 422
+
         db.session.rollback()
-        book = Book.query.filter_by(title=data.title).first()
+
+        # Check if book already exists
+        # isbn must be unique
+        book = Book.query.filter_by(isbn=data.isbn).first()
         if book:
             return {'message': 'Book already exists'}, 400
 
