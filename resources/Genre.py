@@ -49,7 +49,7 @@ class GenreListResource(Resource):
     def get(self):
         """GET method to list all genres"""
 
-        genres = Genre.query.all()
+        genres = Genre.query.filter_by().order_by(Genre.id)
         genres = genres_schema.dump(genres).data
         return {'status': 'success', 'data': genres}, 200
 

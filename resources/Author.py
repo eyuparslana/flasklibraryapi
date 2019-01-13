@@ -8,14 +8,14 @@ author_schema = AuthorSchema()
 
 class AuthorResource(Resource):
     def get(self, author_id):
-        '''GET method to list an author'''
+        """GET method to list an author"""
 
         author = Author.query.get(author_id)
         author = author_schema.dump(author).data
         return {'status': 'success', 'data': author}, 200
 
     def put(self, author_id):
-        '''PUT method to update an author'''
+        """PUT method to update an author"""
 
         json_data = request.get_json(force=True)
         if not json_data:
@@ -38,7 +38,7 @@ class AuthorResource(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, author_id):
-        '''DELETE method to delete an author'''
+        """DELETE method to delete an author"""
 
         author = Author.query.filter_by(id=author_id).delete()
         db.session.commit()
@@ -49,14 +49,14 @@ class AuthorResource(Resource):
 
 class AuthorListResource(Resource):
     def get(self):
-        '''GET method to list all authors'''
+        """GET method to list all authors"""
 
         authors = Author.query.all()
         authors = authors_schema.dump(authors).data
         return {'status': 'success', 'data': authors}, 200
 
     def post(self):
-        '''POST method to create an author'''
+        """POST method to create an author"""
 
         json_data = request.get_json(force=True)
         if not json_data:
