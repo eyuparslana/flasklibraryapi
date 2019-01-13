@@ -1,6 +1,6 @@
 from flask import request
 from flask_restful import Resource
-from models import db, Genre, Author, Book, BookSchema
+from models import db, Author, Book, BookSchema
 
 books_schema = BookSchema(many=True)
 book_schema = BookSchema()
