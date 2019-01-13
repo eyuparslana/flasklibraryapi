@@ -1,4 +1,4 @@
-from marshmallow import fields, validate
+from marshmallow import fields
 from flask_marshmallow import Marshmallow
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -13,7 +13,7 @@ class Genre(db.Model):
     name = db.Column(db.String(50), nullable=False)
 
     def __str__(self):
-        return f'Genre={self.name}'
+        return f'{self.name}'
 
 
 class Author(db.Model):
@@ -23,7 +23,7 @@ class Author(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
 
     def __str__(self):
-        return f'Author={self.first_name} {self.last_name}'
+        return f'{self.first_name} {self.last_name}'
 
 
 class BookGenre(db.Model):
@@ -49,7 +49,7 @@ class Book(db.Model):
         backref=db.backref('books', lazy='dynamic'))
 
     def __str__(self):
-        return f'Book={self.title}'
+        return f'{self.title}'
 
 
 class BookInstance(db.Model):
@@ -64,7 +64,7 @@ class BookInstance(db.Model):
         backref=db.backref('instances', lazy='dynamic'))
 
     def __str__(self):
-        return f'Book={self.book.__str__} Status={self.status}'
+        return f'{self.book.__str__()} Status={self.status}'
 
 
 class Loan(db.Model):
