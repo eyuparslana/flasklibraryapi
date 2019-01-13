@@ -103,14 +103,11 @@ class BookListResource(Resource):
         if not author:
             return {'status': 'error', 'message': 'book author not found'}, 400
 
-        import ipdb
-        ipdb.set_trace()
-
         # Genres control
         genres = data['genres']
         genre_objects = []
         for genre in genres:
-            genre_object = Genre.query.filter_by(id=genre['id']).first()
+            genre_object = Genre.query.filter_by(id=genre).first()
             if not genre_object:
                 return {'status': 'error', 'message': 'genre not found'}, 400
             genre_objects.append(genre_object)
