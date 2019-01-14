@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from resources.Author import AuthorResource, AuthorListResource, AuthorSearch
-from resources.Book import BookResource, BookListResource
+from resources.Book import BookResource, BookListResource, BookSearchResource
 from resources.BookInstance import BookInstanceResource, BookInstanceListResource
 from resources.Genre import GenreResource, GenreListResource
 from resources.Catalog import CatalogResource, CatalogReturnResource
@@ -17,6 +17,7 @@ api.add_resource(AuthorResource, '/Author/<author_id>')
 
 api.add_resource(BookListResource, '/Book')
 api.add_resource(BookResource, '/Book/<book_id>')
+api.add_resource(BookSearchResource, '/Book/Search')
 
 api.add_resource(BookInstanceListResource, '/BookInstance')
 api.add_resource(BookInstanceResource, '/BookInstance/<book_instance_id>')

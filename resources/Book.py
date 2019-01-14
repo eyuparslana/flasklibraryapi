@@ -121,3 +121,21 @@ class BookListResource(Resource):
 
         result = book_schema.dump(book).data
         return {'status': 'success', 'data': result}, 201
+
+
+class BookSearchResource(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+
+        if not json_data:
+            return {'message': 'No input provided'}, 400
+
+        data, errors = book_schema.load(json_data)
+        return_result = Book.query.filter_by(**data)
+
+        result = books_schema.dump(return_result).data
+
+        if len(result) == 0:
+            return {'message': 'No book provided'}, 200
+
+        return result
