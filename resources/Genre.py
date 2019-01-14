@@ -11,6 +11,10 @@ class GenreResource(Resource):
         """GET method to list a genres"""
 
         genre = Genre.query.get(genre_id)
+
+        if not genre:
+            return {'message': 'No Genre Data'}, 204
+
         genre = genre_schema.dump(genre).data
         return {'status': 'success', 'data': genre}, 200
 
@@ -27,7 +31,7 @@ class GenreResource(Resource):
 
         genre = Genre.query.filter_by(id=genre_id).first()
         if not genre:
-            return {'message': 'Genre does not exist'}, 400
+            return {'message': 'Genre does not exist'}, 204
 
         genre.name = data.name
         db.session.commit()
@@ -40,7 +44,7 @@ class GenreResource(Resource):
 
         genre = Genre.query.get(genre_id)
         if not genre:
-            return {'message': 'No Genre Data'}, 400
+            return {'message': 'No Genre Data'}, 204
         db.session.delete(genre)
         db.session.commit()
 
@@ -53,6 +57,8 @@ class GenreListResource(Resource):
         """GET method to list all genres"""
 
         genres = Genre.query.filter_by().order_by(Genre.id)
+        if not genres:
+            return {'message': 'No Genre Data'}, 204
         genres = genres_schema.dump(genres).data
         return {'status': 'success', 'data': genres}, 200
 
@@ -69,9 +75,9 @@ class GenreListResource(Resource):
 
         genre = Genre.query.filter_by(name=data.name).first()
         if genre:
-            return {'message': 'Genre already exists'}, 400
+            return {'status': 'Conflict', 'message': 'Genre already exists'}, 409
 
-        genre = Genre(name=json_data.name)
+        genre = Genre(name=json_data['name'])
 
         db.session.add(genre)
         db.session.commit()

@@ -13,8 +13,10 @@ class BookResource(Resource):
         """
 
         book = Book.query.get(book_id)
+        if not book:
+            return 204
         book = book_schema.dump(book).data
-        return {'status': 'success', 'data': book}, 200
+        return {"status": "success", "data": book}, 200
 
     def put(self, book_id):
         """
@@ -91,7 +93,7 @@ class BookListResource(Resource):
 
         json_data = request.get_json(force=True)
         if not json_data:
-            return {'message': 'No input provided'}, 400
+            return {'status': 'error', 'message': 'No input provided'}, 400
 
         data, errors = book_schema.load(json_data)
         if errors:
@@ -103,7 +105,7 @@ class BookListResource(Resource):
         # isbn must be unique
         book = Book.query.filter_by(isbn=data.isbn).first()
         if book:
-            return {'message': 'Book already exists'}, 400
+            return {'message': 'Book already exists'}, 409
 
         # Author control
         author = Author.query.filter_by(id=data.author_id).first()

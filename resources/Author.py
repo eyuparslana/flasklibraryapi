@@ -28,7 +28,7 @@ class AuthorResource(Resource):
 
         author = Author.query.filter_by(id=author_id).first()
         if not author:
-            return {'message': 'Genre does not exist'}, 400
+            return {'message': 'Genre does not exist'}, 204
 
         author.first_name = data.first_name
         author.last_name = data.last_name
@@ -43,7 +43,7 @@ class AuthorResource(Resource):
 
         author = Author.query.get(author_id)
         if not author:
-            return {'message': 'No Author Data'}, 400
+            return {'message': 'No Author Data'}, 204
         db.session.delete(author)
         db.session.commit()
 
@@ -56,6 +56,8 @@ class AuthorListResource(Resource):
         """GET method to list all authors"""
 
         authors = Author.query.filter_by().order_by(Author.id)
+        if not authors:
+            return {"status": "No Content"}, 204
         authors = authors_schema.dump(authors).data
         return {'status': 'success', 'data': authors}, 200
 
