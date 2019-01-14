@@ -88,12 +88,19 @@ class AuthorListResource(Resource):
         return {'status': 'success', 'data': result}, 201
 
 
-class AuthorSearch(Resource):
+class AuthorSearchResource(Resource):
     def get(self):
         return {'message': 'Must be POST'}, 400
 
     def post(self):
-        """POST method to create an author"""
+        """
+        POST method to search in author entries in database.
+        Searching parameter depends on incoming data. If incoming data includes
+        XXX, method searchs with XXX (XXX: first_name or last_name etc.)
+
+        Returns:
+            Json list(Author entries)
+        """
         json_data = request.get_json(force=True)
 
         if not json_data:
@@ -106,5 +113,5 @@ class AuthorSearch(Resource):
 
         if len(result) == 0:
             return {'message': 'No author provided'}, 200
-            
+
         return result

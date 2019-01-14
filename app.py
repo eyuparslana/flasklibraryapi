@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
-from resources.Author import AuthorResource, AuthorListResource, AuthorSearch
+from resources.Author import AuthorResource, AuthorListResource
+from resources.Author import AuthorSearchResource
 from resources.Book import BookResource, BookListResource, BookSearchResource
 from resources.BookInstance import BookInstanceResource, BookInstanceListResource
 from resources.Genre import GenreResource, GenreListResource
@@ -12,7 +13,7 @@ api = Api(api_bp)
 
 # Routes
 api.add_resource(AuthorListResource, '/Author')
-api.add_resource(AuthorSearch, '/Author/Search')
+api.add_resource(AuthorSearchResource, '/Author/Search')
 api.add_resource(AuthorResource, '/Author/<author_id>')
 
 api.add_resource(BookListResource, '/Book')
