@@ -7,7 +7,7 @@ loans_schema = LoanSchema(many=True)
 loan_schema = LoanSchema()
 
 
-class CatalogResource(Resource):
+class LoanResource(Resource):
     def get(self):
         '''GET method to list all loans'''
 
@@ -17,7 +17,7 @@ class CatalogResource(Resource):
         return {'status': 'success', 'data': result}, 201
 
     def post(self):
-        '''POST method to rent a book'''
+        '''POST method to rent a book instance'''
 
         json_data = request.get_json(force=True)
         if not json_data:
@@ -59,16 +59,20 @@ class CatalogResource(Resource):
         return {'status': 'success', 'data': result}, 201
 
 
-class CatalogReturnResource(Resource):
+class LoanReturnResource(Resource):
     def get(self, loan_id):
-        '''GET method to list a loan'''
+        '''GET method to update a book instance to loanable again'''
 
         loan = Loan.query.get(loan_id)
         if not loan:
             return {'message': 'Loan does not exist'}, 400
 
+        if not loan.is_active:
+            return {'message': 'Loan is not active'}, 400
+
         loan.book_instance.status = 'available'
         loan.book_instance.due_back = None
+        loan.is_active = False
         db.session.commit()
 
         return {'status': 'success'}, 200

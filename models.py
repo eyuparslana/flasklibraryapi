@@ -72,6 +72,7 @@ class Loan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     loaned_by = db.Column(db.String(50), nullable=False)
     loaned_at = db.Column(db.Date(), default=datetime.now)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
     book_instance_id = db.Column(db.Integer, db.ForeignKey(
         'book_instances.id'), nullable=False)
     book_instance = db.relationship('BookInstance')
