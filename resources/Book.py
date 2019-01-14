@@ -64,8 +64,10 @@ class BookResource(Resource):
         DELETE method to delete a book
         """
 
-        book = Book.query.filter_by(id=book_id).delete()
-
+        book = Book.query.get(book_id)
+        if not book:
+            return {'message': 'No Book Data'}, 400
+        db.session.delete(book)
         db.session.commit()
 
         result = book_schema.dump(book).data
@@ -119,3 +121,21 @@ class BookListResource(Resource):
 
         result = book_schema.dump(book).data
         return {'status': 'success', 'data': result}, 201
+
+
+class BookSearchResource(Resource):
+    def post(self):
+        json_data = request.get_json(force=True)
+
+        if not json_data:
+            return {'message': 'No input provided'}, 400
+
+        data, errors = book_schema.load(json_data)
+        return_result = Book.query.filter_by(**data)
+
+        result = books_schema.dump(return_result).data
+
+        if len(result) == 0:
+            return {'message': 'No book provided'}, 200
+
+        return result

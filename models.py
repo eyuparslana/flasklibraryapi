@@ -42,7 +42,7 @@ class Book(db.Model):
         'authors.id', ondelete='CASCADE'), nullable=False)
     author = db.relationship(
         'Author',
-        backref=db.backref('books', lazy='dynamic'))
+        backref=db.backref('books', cascade="all,delete", lazy='dynamic'))
     genres = db.relationship(
         'Genre',
         secondary='book_genre',
@@ -61,7 +61,7 @@ class BookInstance(db.Model):
         'books.id', ondelete='CASCADE'), nullable=False)
     book = db.relationship(
         'Book',
-        backref=db.backref('instances', lazy='dynamic'))
+        backref=db.backref('instances', cascade="all,delete", lazy='dynamic'))
 
     def __str__(self):
         return f'{self.book.__str__()} Status={self.status}'
